@@ -56,7 +56,7 @@ _Panel de control de perfil de usuario o agente_
 
 1. **Clonar el repositorio**
 ```bash
-git clone https://github.com/yourusername/real-estate-platform.git
+git clone https://github.com/MichaelVairoDev/Real_Estate_Platform.git
 cd real-estate-platform
 ```
 

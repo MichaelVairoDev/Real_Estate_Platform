@@ -1,0 +1,100 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String     @id @default(uuid())
+  email         String     @unique
+  password      String
+  name          String
+  phone         String?
+  role          Role       @default(USER)
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+  properties    Property[] @relation("UserProperties")
+  favorites     Property[] @relation("UserFavorites")
+  messages      Message[]  @relation("UserMessages")
+  agentMessages Message[]  @relation("AgentMessages")
+}
+
+model Property {
+  id           String        @id @default(uuid())
+  title        String
+  description  String
+  price        Float
+  address      String
+  city         String
+  state        String
+  zipCode      String
+  country      String
+  latitude     Float?
+  longitude    Float?
+  bedrooms     Int
+  bathrooms    Int
+  area         Float
+  yearBuilt    Int?
+  propertyType PropertyType
+  status       Status        @default(ACTIVE)
+  features     String[]
+  images       Image[]
+  tour3D       String?
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  owner        User          @relation("UserProperties", fields: [ownerId], references: [id])
+  ownerId      String
+  favoritedBy  User[]        @relation("UserFavorites")
+  messages     Message[]
+}
+
+model Image {
+  id         String   @id @default(uuid())
+  url        String
+  property   Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  propertyId String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+model Message {
+  id         String   @id @default(uuid())
+  content    String
+  property   Property @relation(fields: [propertyId], references: [id])
+  propertyId String
+  sender     User     @relation("UserMessages", fields: [senderId], references: [id])
+  senderId   String
+  agent      User     @relation("AgentMessages", fields: [agentId], references: [id])
+  agentId    String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+enum Role {
+  USER
+  AGENT
+  ADMIN
+}
+
+enum PropertyType {
+  HOUSE
+  APARTMENT
+  CONDO
+  TOWNHOUSE
+  LAND
+  COMMERCIAL
+  OTHER
+}
+
+enum Status {
+  ACTIVE
+  PENDING
+  SOLD
+  RENTED
+} 
